@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Student Information Management System</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/login.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>User Login</h1>
+      </header>
+
+      <section>
+        {% if message %}
+        <p>{{ message }}</p>
+        <button type="submit">
+          <a
+            style="text-decoration-line: none; color: white; font-weight: bold"
+            href="{{ url_for('login') }}"
+            >Retry</a
+          >
+        </button>
+        {% else %}
+        <form action="{{ url_for('login') }}" method="POST">
+          <!-- Roll Number -->
+          <label for="roll_number">Roll Number *</label>
+          <input type="text" id="roll_number" name="roll_number" required />
+
+          <!-- Password -->
+          <label for="password">Password *</label>
+          <input type="password" id="password" name="password" required />
+
+          <!-- Login Button -->
+          <button type="submit">Login</button>
+
+          <!-- Forgot Password -->
+          <p class="forgot-password">
+            <a href="{{url_for('forgot_password')}}">Forgot Password?</a>
+          </p>
+        </form>
+        {% endif %}
+      </section>
+    </div>
+  </body>
+</html>

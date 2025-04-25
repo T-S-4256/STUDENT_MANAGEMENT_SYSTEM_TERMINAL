@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Update Student - Admin Dashboard</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 30px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 12px;
+        margin-top: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      .form-group button {
+        margin-top: 20px;
+        padding: 12px 25px;
+        background-color: #3498db;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .form-group button:hover {
+        background-color: #2980b9;
+      }
+      .file-input-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .file-input-group input[type="file"] {
+        width: 80%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Update Student Information</h2>
+      <form method="POST" enctype="multipart/form-data" action="{{ url_for('update_student') }}">
+        <input type="hidden" name="roll_number" value="{{ student['roll_number'] }}" />
+
+        <div class="form-group">
+          <label for="full_name">Full Name</label>
+          <input
+            type="text"
+            id="full_name"
+            name="full_name"
+            value="{{ student['full_name'] }}"
+            required
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="father_name">Father's Name</label>
+          <input
+            type="text"
+            id="father_name"
+            name="father_name"
+            value="{{ student['father_name'] }}"
+            required
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="course">Course</label>
+          <select id="course" name="course" required class="form-control">
+            <option value="BCA" {% if student['course'] == 'BCA' %}selected{% endif %}>BCA</option>
+            <option value="BSC" {% if student['course'] == 'BSC' %}selected{% endif %}>BSC</option>
+            <option value="BA" {% if student['course'] == 'BA' %}selected{% endif %}>BA</option>
+            <option value="BCOM" {% if student['course'] == 'BCOM' %}selected{% endif %}>BCOM</option>
+            <option value="BTECH" {% if student['course'] == 'BTECH' %}selected{% endif %}>BTECH</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="semester">Semester</label>
+          <input
+            type="number"
+            id="semester"
+            name="semester"
+            value="{{ student['semester'] }}"
+            required
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="contact_number">Contact Number</label>
+          <input
+            type="tel"
+            id="contact_number"
+            name="contact_number"
+            value="{{ student['contact_number'] }}"
+            required
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value="{{ student['email'] }}"
+            class="form-control"
+          />
+        </div>
+
+        <!-- File Upload for Marksheet -->
+        <div class="form-group file-input-group">
+          <label for="marksheet">Upload Marksheet (CSV)</label>
+          <input type="file" name="marksheet" id="marksheet" accept=".csv" />
+          <select id="semesterM" name="semesterM" required class="form-control">
+            <option value="first" >First</option>
+            <option value="second" >Second</option>
+            <option value="third" >Third</option>
+            <option value="fourth" >Fourth</option>
+            <option value="fifth">Fifth</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Update</button>
+      </form>
+    </div>
+  </body>
+</html>

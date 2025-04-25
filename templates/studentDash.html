@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Dashboard - Student Information Management System</title>
+
+    <!-- CSS Styles -->
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        width: 100%;
+        max-width: 1000px;
+        margin: 50px auto;
+        padding: 30px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 30px;
+      }
+      .college-name h2 {
+        margin: 0;
+        color: #2ecc71;
+        font-size: 28px;
+        font-weight: 600;
+      }
+      .student-info {
+        display: flex;
+        align-items: center;
+      }
+      .student-circle {
+        width: 45px;
+        height: 45px;
+        background-color: #3498db;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin-right: 15px;
+        font-size: 20px;
+        font-weight: bold;
+      }
+      .btn-danger {
+        background-color: #e74c3c;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        color: white;
+        font-weight: bold;
+        border: none;
+        margin-left: 15px;
+      }
+      .form-container {
+        margin-bottom: 30px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 12px;
+        margin-top: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      .btn-primary,
+      .btn-warning,
+      .btn-success {
+        margin-top: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        color: white;
+      }
+      .btn-primary {
+        background-color: #3498db;
+      }
+      .btn-warning {
+        background-color: #f39c12;
+      }
+      .btn-success {
+        background-color: #2ecc71;
+      }
+      .result-display ul {
+        list-style-type: none;
+        padding-left: 0;
+      }
+      .result-display li {
+        background: #ecf0f1;
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <header>
+        <div class="college-name">
+          <h2>Dr. Hari Singh Gour University</h2>
+        </div>
+
+        <div class="student-info">
+          <div class="student-circle">
+            <span> S.P </span>
+          </div>
+          <span>{{ studentData.full_name }}</span>
+          <a href="{{ url_for('login') }}" class="btn btn-danger">Logout</a>
+        </div>
+      </header>
+
+      <!-- Semester Result Section -->
+      <section class="form-container">
+        <h2>View Result</h2>
+        <form method="GET" action="{{ url_for('get_result') }}">
+          <div class="form-group">
+            <label for="semesterSelect">Select Semester</label>
+            <select
+              id="semesterSelect"
+              name="semester"
+              class="form-control"
+              required
+            >
+              <option value="first">First</option>
+              <option value="second">Second</option>
+              <option value="third">Third</option>
+              <option value="fourth">Fourth</option>
+              <option value="fifth">Fifth</option>
+            </select>
+            
+            <!-- Download link -->
+            <a
+              id="downloadLink"
+              class="btn btn-success"
+              href="{{ url_for('download_result', roll_number=studentData.roll_number, semester='first') }}"
+              style="margin-top: 15px; display: inline-block"
+            >
+              Download Result (CSV)
+            </a>
+          </div>
+
+          <!-- Hidden field for roll number -->
+          <input
+            type="hidden"
+            name="roll_number"
+            value="{{ studentData.roll_number }}"
+          />
+          
+          <button type="submit" class="btn btn-primary">View Result</button>
+        </form>
+
+        {% if result %}
+        <div class="result-display">
+          <h3>Result for {{ selected_semester | capitalize }} Semester</h3>
+          <table border="1" cellpadding="10" cellspacing="0">
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Marks</th>
+                <th>Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for subject, mark in result.items() %}
+              <tr>
+                <td>{{ subject | capitalize }}</td>
+                <td>{% if mark is not none %} {{ mark }} {% else %} N/A {% endif %}</td>
+                <td>
+                  {% if mark is not none %}
+                    {% if mark > 90 %} O {% elif mark > 80 %} A {% elif mark > 60 %} B {% else %} C {% endif %}
+                  {% else %}
+                    N/A
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+
+              <tr>
+                <th>Total</th>
+                <td colspan="2">{{ result.values() | sum }}</td>
+              </tr>
+
+              <tr>
+                <th>Result</th>
+                <td colspan="2">
+                  {% if result.values() | sum > 300 %} Pass {% else %} Fail {% endif %}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+
+        {% if message %}
+        <h3>{{ message }}</h3>
+        {% endif %}
+      </section>
+
+      <!-- Update Password Section -->
+      <section class="form-container">
+        <h2>Update Password</h2>
+        <form method="POST" action="{{ url_for('update_password') }}">
+          <div class="form-group">
+            <label for="old_password">Old Password</label>
+            <input type="password" id="old_password" name="old_password" required class="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="new_password">New Password</label>
+            <input type="password" id="new_password" name="new_password" required class="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="confirm_password">Confirm New Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" required class="form-control" />
+          </div>
+          <input type="hidden" name="roll_number" value="{{ studentData.roll_number }}" />
+          <button type="submit" class="btn btn-warning">Update Password</button>
+        </form>
+      </section>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+      const semesterSelect = document.getElementById("semesterSelect");
+      const downloadLink = document.getElementById("downloadLink");
+    
+      semesterSelect.addEventListener("change", function () {
+        const selectedSemester = this.value;
+        const rollNumber = "{{ studentData.roll_number }}";
+        
+        // Update the download link dynamically
+        const newHref = `/student/download_result?roll_number=${rollNumber}&semester=${selectedSemester}`;
+        downloadLink.setAttribute("href", newHref);
+      });
+    </script>
+  </body>
+</html>

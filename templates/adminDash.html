@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Student Information Management System</title>
+    <script>
+      // Function to toggle the form for adding a student
+      function toggleAddStudentForm(option) {
+        if (option === "single") {
+          document.getElementById("single-student-form").style.display =
+            "block";
+          document.getElementById("multiple-student-form").style.display =
+            "none";
+        } else {
+          document.getElementById("single-student-form").style.display = "none";
+          document.getElementById("multiple-student-form").style.display =
+            "block";
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="college-name">
+          <h2>Dr. Hari Singh Gour University</h2>
+        </div>
+
+        <div class="admin-info">
+          <div class="admin-circle">
+            <span>S.P</span>
+          </div>
+          <a href="{{ url_for('login') }}" class="btn btn-danger">Logout</a>
+        </div>
+      </header>
+
+      <section>
+        <!-- Course-wise Student Count and Top Scorer -->
+
+        <div class="form-container">
+          <h2>Course-wise Student Count and Top Scorer</h2>
+          <div class="course-summary">
+            {% for course in course_detail %}
+            <div class="course-summary-item">
+              <h3>{{ course.Course }}</h3>
+              <p>Total Students: {{ course.Total }}</p>
+              <p>Top Scorer: {{ course.Topper }}</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Add a Student Feature -->
+        <div class="form-container">
+          <h2>Add a Student</h2>
+
+          <!-- Option to Add Single or Multiple Students -->
+          <div class="form-group">
+            <button
+              type="button"
+              class="btn btn-info"
+              onclick="toggleAddStudentForm('single')"
+            >
+              Add Single Student
+            </button>
+            <button
+              type="button"
+              class="btn btn-warning"
+              onclick="toggleAddStudentForm('multiple')"
+            >
+              Add Multiple Students
+            </button>
+          </div>
+
+          <!-- Single Student Form -->
+          <form
+            id="single-student-form"
+            action="{{ url_for('register') }}"
+            method="POST"
+            enctype="multipart/form-data"
+            style="display: none"
+          >
+            <div class="form-group">
+              <label for="full_name">Full Name</label>
+              <input
+                type="text"
+                id="full_name"
+                name="full_name"
+                required
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label for="father_name">Father's Name</label>
+              <input
+                type="text"
+                id="father_name"
+                name="father_name"
+                required
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label for="course">Course</label>
+              <select id="course" name="course" required class="form-control">
+                <option value="BCA">BCA</option>
+                <option value="BSC">BSC</option>
+                <option value="BA">BA</option>
+                <option value="BCOM">BCOM</option>
+                <option value="BTECH">BTECH</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="semester">Semester</label>
+              <input
+                type="text"
+                id="semester"
+                name="semester"
+                required
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label for="contact_number">Contact Number</label>
+              <input
+                type="tel"
+                id="contact_number"
+                name="contact_number"
+                required
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label for="profile_photo">Profile Photo</label>
+              <input
+                type="file"
+                id="profile_photo"
+                name="profile_photo"
+                accept="image/*"
+                class="form-control"
+              />
+            </div>
+            <button type="submit" class="btn btn-success">Register</button>
+          </form>
+
+          <!-- Multiple Students Form -->
+          <form
+            id="multiple-student-form"
+            action="{{ url_for('register_multiple') }}"
+            method="POST"
+            enctype="multipart/form-data"
+            style="display: none"
+          >
+            <div class="form-group">
+              <label for="file_upload">Upload Excel File</label>
+              <input
+                type="file"
+                id="file_upload"
+                name="file_upload"
+                class="form-control"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-success">Upload</button>
+          </form>
+          <form
+          action="{{ url_for('search_student') }}"
+          method="POST"
+          class="search-form"
+        >
+          <input
+            type="text"
+            id="search_roll_number"
+            name="search_roll_number"
+            placeholder="Search by Roll Number"
+            class="search-input"
+            required
+          />
+          <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+        </div>
+        
+        {% if studentData %}
+        <div class="form-container">
+          <h2>Search Result</h2>
+          <div class="search-result">
+            <p><strong>Full Name:</strong> {{ studentData.full_name }}</p>
+            <p><strong>Roll Number:</strong> {{ studentData.roll_number }}</p>
+            <p><strong>Father's Name:</strong> {{ studentData.father_name }}</p>
+            <p><strong>Course:</strong> {{ studentData.course }}</p>
+            <p><strong>Semester:</strong> {{ studentData.semester }}</p>
+            <p><strong>Contact:</strong> {{ studentData.contact_number }}</p>
+            <p><strong>Email:</strong> {{ studentData.email }}</p>
+
+            <form
+              action="{{ url_for('delete_student') }}"
+              method="POST"
+              style="display: inline"
+            >
+              <input
+                type="hidden"
+                name="roll_number"
+                value="{{ studentData.roll_number }}"
+              />
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+
+            <form
+              action="{{ url_for('update_student') }}"
+              method="GET"
+              style="display: inline"
+            >
+              <input
+                type="hidden"
+                name="roll_number"
+                value="{{ studentData.roll_number }}"
+              />
+              <button type="submit" class="btn btn-warning">Update</button>
+            </form>
+
+            <form
+              action="{{ url_for('add_marks') }}"
+              method="POST"
+              style="display: inline"
+              enctype="multipart/form-data"
+            >
+              <div class="form-group">
+                <label for="marksheet">Semester</label>
+                <select
+                  id="marksheet"
+                  name="marksheet"
+                  required
+                  class="form-control"
+                >
+                  <option value="first">First</option>
+                  <option value="second">Second</option>
+                  <option value="third">Third</option>
+                  <option value="fourth">Fourth</option>
+                  <option value="fifth">Fifth</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="file_upload">Upload Marksheet</label>
+                <input
+                  type="file"
+                  id="marksheet_upload"
+                  name="marksheet_upload"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <input
+                type="hidden"
+                name="roll_number"
+                value="{{ studentData.roll_number }}"
+              />
+              <button type="submit" class="btn btn-warning">
+                Add Marksheet
+              </button>
+            </form>
+          </div>
+        </div>
+        {% endif %}
+      </section>
+    </div>
+
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        width: 100%;
+        max-width: 1000px;
+        margin: 50px auto;
+        padding: 30px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        position: relative;
+      }
+      .college-name h2 {
+        margin: 0;
+        color: #2ecc71;
+        font-size: 28px;
+        font-weight: 600;
+      }
+
+      /* Search Input in the Top Middle */
+      .search-form {
+        display: flex;
+        align-items: center;
+      }
+      .search-input {
+        padding: 10px;
+        margin-right: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 200px;
+      }
+
+      /* Admin Initial Circle and Logout Button */
+      .admin-info {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+      }
+      .admin-circle {
+        width: 45px;
+        height: 45px;
+        background-color: #3498db;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin-right: 15px;
+        font-size: 20px;
+        font-weight: bold;
+      }
+      .btn-danger {
+        background-color: #e74c3c;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        color: white;
+        font-weight: bold;
+        border: none;
+      }
+
+      .form-container {
+        margin-bottom: 30px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 12px;
+        margin-top: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      .form-group button {
+        margin-top: 20px;
+        padding: 12px 25px;
+        background-color: #3498db;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .form-group button:hover {
+        background-color: #2980b9;
+      }
+
+      /* Course-wise Student Count and Top Scorer */
+      .course-summary {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+      .course-summary-item {
+        width: 30%;
+        padding: 20px;
+        background-color: #f4f7fc;
+        border-radius: 8px;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      .course-summary-item h3 {
+        margin-bottom: 10px;
+        color: #2ecc71;
+        font-size: 20px;
+      }
+      .course-summary-item p {
+        margin: 5px 0;
+        font-size: 16px;
+      }
+    </style>
+  </body>
+</html>
